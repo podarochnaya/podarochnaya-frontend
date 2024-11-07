@@ -86,8 +86,8 @@ export const WishlistsPage = () => {
                                 Пользователи:
                                 <p className="text-medium text-neutral-500">
                                     {wishlist.allowedUsers.map(
-                                        (email, index) => (
-                                            <p key={index}>{email}</p>
+                                        (user, index) => (
+                                            <p key={index}>{user.email}</p>
                                         ),
                                     )}
                                 </p>

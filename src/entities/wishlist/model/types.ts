@@ -1,15 +1,14 @@
+import { UserRef } from '../../user/model/types.ts';
+
 export interface WishlistDashboard {
     id: number;
     title: string;
     description: string;
     status: 'OPENED' | 'CLOSED';
     visibility: keyof typeof WishlistVisibility;
-    ownerUser: {
-        id: number;
-        email: string;
-    };
+    ownerUser: UserRef;
     createdAt: string;
-    allowedUsers: string[];
+    allowedUsers: UserRef[];
 }
 export const WishlistVisibility = {
     public: 'PUBLIC',

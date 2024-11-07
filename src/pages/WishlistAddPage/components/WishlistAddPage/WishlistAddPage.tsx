@@ -106,7 +106,7 @@ export const WishlistAddPage = () => {
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        const response = await api.post('api/v1/gifts', {
+        const response = await api.post('api/v1/wishlists', {
             title,
             description,
             visibility,
@@ -163,7 +163,7 @@ export const WishlistAddPage = () => {
                             }}
                             labelPlacement="outside-left"
                             value={visibility}
-                            onChange={(e) => setVisibility(e.target.value)}
+                            onChange={(e) => setVisibility(WishlistVisibility[e.target.value as keyof typeof WishlistVisibility])}
                         >
                             {Object.entries(WishlistVisibility).map(
                                 ([key, value]) => (
@@ -212,8 +212,13 @@ export const WishlistAddPage = () => {
                     </div>
                     <div className="flex flex-col w-full items-end pb-6">
                         {gifts.map((gift, index) => (
-                            <Card className="py-6 mb-6 w-full" key={index}>
-                                <CardHeader>Подарок {index + 1}</CardHeader>
+                            <Card className="pb-6 pt-3 mb-6 w-full" key={index}>
+                                <CardHeader className="flex justify-between pl-5">
+                                    <p>
+                                        Подарок {index + 1}
+                                    </p>
+                                    <Button isIconOnly onClick={() => removeGift(index)}><TrashIcon width="25px" /></Button>
+                                    </CardHeader>
                                 <CardBody>
                                     <div className="flex pl-2 justify-between pb-6">
                                         <p className="text-small">Название</p>
@@ -290,7 +295,7 @@ export const WishlistAddPage = () => {
                                             value={`${gift.price}`}
                                             onChange={(e) =>
                                                 handleGiftsChange(
-                                                    e.target.value,
+                                                    Number(e.target.value),
                                                     'price',
                                                     index,
                                                 )

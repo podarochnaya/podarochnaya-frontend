@@ -1,4 +1,4 @@
-import React, { Key, useCallback } from 'react';
+import React, { Key, useCallback, useEffect, useState } from 'react';
 import {
     Avatar,
     Button,
@@ -12,15 +12,28 @@ import {
     TableHeader,
     TableRow,
 } from '@nextui-org/react';
-import { columns, giftsMock } from '../../lib/constants.ts';
+import { columns } from '../../lib/constants.ts';
 import { ColumnStaticSize } from '@react-types/table';
 import { SearchIcon } from '../../../../shared/components/icons/SearchIcon/SearchIcon.tsx';
+import { getAllGifts } from '../../../../entities/gift/api';
+import { GiftWithImageResponse } from '../../../../entities/gift/model/types.ts';
 
 export const DashboardPage = () => {
-    const gifts = giftsMock;
-    const [filterValue, setFilterValue] = React.useState('');
-    const [rowsPerPage, setRowsPerPage] = React.useState(5);
-    const [page, setPage] = React.useState(1);
+    const [gifts, setGifts] = useState<GiftWithImageResponse[]>([]);
+    const [filterValue, setFilterValue] = useState('');
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    const [page, setPage] = useState(1);
+
+    useEffect(() => {
+        getAllGifts()
+            .then((response) => {
+                setGifts(response);
+            })
+            .catch((err) => {
+                console.error('Error loading gifts:', err);
+            });
+    }, []);
+
     const renderCell = useCallback((gift, columnKey: Key) => {
         const cellValue = gift[columnKey.toString()];
 
@@ -29,7 +42,7 @@ export const DashboardPage = () => {
                 return (
                     <div className="flex flex-row items-center gap-5">
                         <Avatar
-                            src={gift.image}
+                            src={`data:image/png;base64,${gift.image}`}
                             size="lg"
                             className="min-w-14"
                         />
@@ -71,12 +84,12 @@ export const DashboardPage = () => {
         }
     }, []);
 
-    const onClear = React.useCallback(() => {
+    const onClear = useCallback(() => {
         setFilterValue('');
         setPage(1);
     }, []);
 
-    const onSearchChange = React.useCallback((value: string) => {
+    const onSearchChange = useCallback((value: string) => {
         if (value) {
             setFilterValue(value);
             setPage(1);
@@ -85,7 +98,7 @@ export const DashboardPage = () => {
         }
     }, []);
 
-    const onRowsPerPageChange = React.useCallback((e) => {
+    const onRowsPerPageChange = useCallback((e) => {
         setRowsPerPage(Number(e.target.value));
         setPage(1);
     }, []);
@@ -127,7 +140,9 @@ export const DashboardPage = () => {
 
         if (Boolean(filterValue)) {
             filteredUsers = filteredUsers.filter((gift) =>
-                gift.title.toLowerCase().includes(filterValue.toLowerCase()),
+                gift.gift.title
+                    .toLowerCase()
+                    .includes(filterValue.toLowerCase()),
             );
         }
 
@@ -208,9 +223,11 @@ export const DashboardPage = () => {
             </TableHeader>
             <TableBody items={items}>
                 {(item) => (
-                    <TableRow key={item.id}>
+                    <TableRow key={item.gift.id}>
                         {(columnKey) => (
-                            <TableCell>{renderCell(item, columnKey)}</TableCell>
+                            <TableCell>
+                                {renderCell(item.gift, columnKey)}
+                            </TableCell>
                         )}
                     </TableRow>
                 )}

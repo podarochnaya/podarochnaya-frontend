@@ -1,20 +1,26 @@
 import api from '../../../shared/api';
-import { AuthToken, LoginDTO, User } from '../../user/model/types.ts';
+import { GiftWithImageResponse } from '../model/types';
 
 const BASE_GIFT_URL = '/api/v1/gifts';
 
-export const getUser = () => {
-    return api.get<User>(BASE_GIFT_URL); // todo
-}
+export const getGift = (giftId: number) => {
+    return api.get<GiftWithImageResponse>(`${BASE_GIFT_URL}/${giftId}`)
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.error('Error fetching gift:', error);
+            throw error;
+        });
+};
 
-export const registerUser = (user: User) => {
-    return api.post<AuthToken>('/api/v1/gifts', {
-        user
-    });
-}
-
-export const loginUser = (login: LoginDTO) => {
-    return api.post<AuthToken>('/auth/sign-in', {
-        ...login
-    });
-}
+export const getAllGifts = () => {
+    return api.get<GiftWithImageResponse[]>(BASE_GIFT_URL)
+        .then(response => {
+            return response.data;
+        })
+        .catch(error => {
+            console.error('Error fetching all gifts:', error);
+            throw error;
+        });
+};

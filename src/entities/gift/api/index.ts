@@ -24,3 +24,14 @@ export const getAllGifts = () => {
             throw error;
         });
 };
+
+export const reserveGift = (giftId: number) => {
+                               return api.put<Gift>(`${BASE_GIFT_URL}/reserve/${giftId}`)
+                                   .then(response => {
+                                       return response.data;
+                                   })
+                                   .catch(error => {
+                                       console.error('Error fetching gift:', error);
+                                       throw error;
+                                   });
+                           };

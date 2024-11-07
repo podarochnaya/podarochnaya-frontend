@@ -40,6 +40,7 @@ export const WishlistsPage = () => {
             <div className="grid grid-cols-2 gap-10 px-10">
                 {wishlists.map((wishlist) => (
                     <Card className="p-3" key={wishlist.id}>
+                    <Link href={`/wishlists/${wishlist.id}/gifts`} key={wishlist.id}>
                         <CardHeader>
                             <p className="text-2xl flex items-center w-full justify-between">
                                 {wishlist.title}
@@ -52,6 +53,7 @@ export const WishlistsPage = () => {
                                 </div>
                             </p>
                         </CardHeader>
+                        </Link>
                         <Divider className="mx-3 w-auto"></Divider>
                         <CardBody className="flex-col gap-4">
                             <p className="flex gap-2">

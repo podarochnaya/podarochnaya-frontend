@@ -15,19 +15,30 @@ import {
 import { columns } from '../../lib/constants.ts';
 import { ColumnStaticSize } from '@react-types/table';
 import { SearchIcon } from '../../../../shared/components/icons/SearchIcon/SearchIcon.tsx';
-import { getAllGifts } from '../../../../entities/gift/api';
+import { getAllGifts, reserveGift } from '../../../../entities/gift/api';
 import { GiftWithImageResponse } from '../../../../entities/gift/model/types.ts';
+import {
+  BrowserRouter as Router,
+  generatePath,
+  Switch,
+  Route,
+  useHistory,
+  useParams
+} from "react-router-dom";
 
-export const DashboardPage = () => {
+export const WishlistGiftsPage = () => {
+    const { wishlistId } = useParams<{ wishlistId: string }>();
     const [gifts, setGifts] = useState<GiftWithImageResponse[]>([]);
     const [filterValue, setFilterValue] = useState('');
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [page, setPage] = useState(1);
+    const [wishlistTitle, setWishlistTitle] = useState<string>('');
 
     useEffect(() => {
         getAllGifts()
             .then((response) => {
-                setGifts(response);
+                const filteredGifts = response.filter(item => item.gift.wishlist.id === parseInt(wishlistId));
+                setGifts(filteredGifts);
             })
             .catch((err) => {
                 console.error('Error loading gifts:', err);
@@ -36,6 +47,25 @@ export const DashboardPage = () => {
 
     const renderCell = useCallback((gift, image, columnKey: Key) => {
         const cellValue = gift[columnKey.toString()];
+
+const handleReservedChange = (giftId: number, checked: boolean) => {
+    // Преобразуем значение в true/false для запроса на сервер
+    const status = checked; // если checked == true, значит подарок забронирован
+
+    // Вызываем функцию для обновления статуса подарка на сервере
+    reserveGift(giftId, status).then((updatedGift) => {
+        // Если запрос успешен, обновляем локальное состояние подарков
+        setGifts(prevGifts =>
+            prevGifts.map(gift =>
+                gift.id === giftId ? { ...gift, reserved: status } : gift // обновляем статус только для этого подарка
+            )
+        );
+    window.location.reload();
+    }).catch((error) => {
+        console.error('Error updating gift status:', error);
+    });
+};
+
 
         switch (columnKey) {
             case 'title':
@@ -79,6 +109,20 @@ export const DashboardPage = () => {
                         </p>
                     </div>
                 );
+                        case 'reserved':
+                                    return (
+                                        <div className="flex flex-col items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={cellValue === true} // Проверяем, если 'reserved' true, чекбокс будет отмечен
+                                                onChange={(e) => handleReservedChange(gift.id, e.target.checked)} // Обработчик изменения
+                                                className="w-5 h-5" // Размер чекбокса
+                                            />
+                                            <p className="text-bold text-medium capitalize">
+                                                {cellValue ? 'Reserved' : 'Not Reserved'}
+                                            </p>
+                                        </div>
+                                    );
             default:
                 return cellValue;
         }
@@ -106,6 +150,12 @@ export const DashboardPage = () => {
     const topContent = React.useMemo(() => {
         return (
             <div className="flex flex-col gap-4">
+            {/* Header с названием вишлиста */}
+                            <div className="w-full py-6 bg-blue-500 text-white text-center rounded-t-lg">
+                                <h2 className="text-2xl font-bold">Wishlist: {wishlistId}</h2> {/* Заголовок с названием вишлиста */}
+                            </div>
+
+                            {/* Поле поиска */}
                 <div className="flex justify-between gap-3 items-end">
                     <Input
                         isClearable
@@ -226,7 +276,7 @@ export const DashboardPage = () => {
                     <TableRow key={item.gift.id}>
                         {(columnKey) => (
                             <TableCell>
-                                {renderCell(item.gift, item.image, columnKey)}
+                               {renderCell(item.gift, item.image, columnKey)}
                             </TableCell>
                         )}
                     </TableRow>

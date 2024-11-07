@@ -39,61 +39,63 @@ export const WishlistsPage = () => {
             </div>
             <div className="grid grid-cols-2 gap-10 px-10">
                 {wishlists.map((wishlist) => (
-                    <Card className="p-3" key={wishlist.id}>
-                        <CardHeader>
-                            <p className="text-2xl flex items-center w-full justify-between">
-                                {wishlist.title}
-                                <div className="flex items-center">
-                                    {wishlist.visibility !== 'PUBLIC' ? (
-                                        <LockIcon width="35px" />
-                                    ) : (
-                                        <UnlockIcon width="35px" />
-                                    )}
-                                </div>
-                            </p>
-                        </CardHeader>
-                        <Divider className="mx-3 w-auto"></Divider>
-                        <CardBody className="flex-col gap-4">
-                            <p className="flex gap-2">
-                                Описание:{' '}
-                                <p className="text-medium text-neutral-500">
-                                    {wishlist.description}
-                                </p>
-                            </p>
-                            <p className="flex gap-2">
-                                Статус:{' '}
-                                <Chip
-                                    size="sm"
-                                    color={
-                                        wishlist.status === 'OPENED'
-                                            ? 'success'
-                                            : 'default'
-                                    }
-                                    className="text-medium font-mono"
-                                >
-                                    {wishlist.status === 'OPENED'
-                                        ? 'Открыт'
-                                        : 'Закрыт'}
-                                </Chip>
-                            </p>
-                            <p className="flex gap-2">
-                                Дата создания:
-                                <p className="text-medium text-neutral-500">
-                                    {wishlist.createdAt}
-                                </p>
-                            </p>
-                            <p className="flex gap-2">
-                                Пользователи:
-                                <p className="text-medium text-neutral-500">
-                                    {wishlist.allowedUsers.map(
-                                        (email, index) => (
-                                            <p key={index}>{email}</p>
-                                        ),
-                                    )}
-                                </p>
-                            </p>
-                        </CardBody>
-                    </Card>
+                            <Card className="p-3 w-full" key={wishlist.id}>
+                             <Link href={`/wishlists/${wishlist.id}/gifts`} key={wishlist.id}>
+                                <CardHeader>
+                                    <p className="text-2xl flex items-center w-full justify-between">
+                                        {wishlist.title}
+                                        <div className="flex items-center">
+                                            {wishlist.visibility !== 'PUBLIC' ? (
+                                                <LockIcon width="35px" />
+                                            ) : (
+                                                <UnlockIcon width="35px" />
+                                            )}
+                                        </div>
+                                    </p>
+                                </CardHeader>
+                                 </Link>
+                                <Divider className="mx-3 w-auto"></Divider>
+                                <CardBody className="flex-col gap-4">
+                                    <p className="flex gap-2">
+                                        Описание:{' '}
+                                        <p className="text-medium text-neutral-500">
+                                            {wishlist.description}
+                                        </p>
+                                    </p>
+                                    <p className="flex gap-2">
+                                        Статус:{' '}
+                                        <Chip
+                                            size="sm"
+                                            color={
+                                                wishlist.status === 'OPENED'
+                                                    ? 'success'
+                                                    : 'default'
+                                            }
+                                            className="text-medium font-mono"
+                                        >
+                                            {wishlist.status === 'OPENED'
+                                                ? 'Открыт'
+                                                : 'Закрыт'}
+                                        </Chip>
+                                    </p>
+                                    <p className="flex gap-2">
+                                        Дата создания:
+                                        <p className="text-medium text-neutral-500">
+                                            {wishlist.createdAt}
+                                        </p>
+                                    </p>
+                                    <p className="flex gap-2">
+                                        Пользователи:
+                                        <p className="text-medium text-neutral-500">
+                                            {wishlist.allowedUsers.map(
+                                                (email, index) => (
+                                                    <p key={index}>{email}</p>
+                                                ),
+                                            )}
+                                        </p>
+                                    </p>
+                                </CardBody>
+                            </Card>
                 ))}
             </div>
         </>

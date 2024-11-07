@@ -1,16 +1,93 @@
-import { Button, Input, Select, SelectItem } from '@nextui-org/react';
-import { useState } from 'react';
-import { WishlistVisibility } from '../../../../entities/wishlist/model/types.ts';
+import {
+    Button,
+    Card,
+    CardBody,
+    CardHeader,
+    Input,
+    Select,
+    SelectItem,
+} from '@nextui-org/react';
+import { FormEvent, useState } from 'react';
 import { TrashIcon } from '../../../../shared/components/icons/TrashIcon/TrashIcon.tsx';
+import { WishlistVisibility } from '../../../../entities/wishlist/constants.ts';
+import { ImageControl } from '../ImageControl/ImageControl.tsx';
+import api from '../../../../shared/api';
 
 export const WishlistAddPage = () => {
     const [title, setTitle] = useState<string>();
     const [description, setDescription] = useState<string>();
     const [visibility, setVisibility] = useState<string>();
     const [userEmails, setUserEmails] = useState(['']);
+    const [gifts, setGifts] = useState<
+        {
+            title?: string;
+            description?: string;
+            file?: {
+                fileName: string | null;
+                fileContent: string | null;
+                contentType: string | null;
+            };
+            url?: string;
+            price?: number;
+        }[]
+    >([]);
+
+    const addGift = () => {
+        setGifts([
+            ...gifts,
+            {
+                title: undefined,
+                description: undefined,
+                file: undefined,
+                url: undefined,
+                price: undefined,
+            },
+        ]);
+    };
+
+    const removeGift = (index: number) => {
+        const data = [...gifts];
+        data.splice(index, 1);
+
+        setGifts(data);
+    };
+
+    const handleGiftsChange = (
+        value: string | number,
+        name: keyof (typeof gifts)[number],
+        index: number,
+    ) => {
+        const data = [...gifts];
+        if (!data.length) return;
+
+        // @ts-ignore
+        data[index][name] = value;
+
+        setGifts(data);
+    };
+
+    const handleGiftsImageChange = (index: number) => {
+        return (
+            fileName: string | null,
+            fileContent: string | null,
+            contentType: string | null,
+        ) => {
+            const data = [...gifts];
+            if (!data.length) return;
+
+            // @ts-ignore
+            data[index]['file'] = {
+                fileName,
+                fileContent,
+                contentType,
+            };
+
+            setGifts(data);
+        };
+    };
 
     const handleUserChange = (value: string, index: number) => {
-        let data = [...userEmails];
+        const data = [...userEmails];
         data[index] = value;
 
         setUserEmails(data);
@@ -21,16 +98,32 @@ export const WishlistAddPage = () => {
     };
 
     const removeUserEmail = (index: number) => {
-        let data = [...userEmails];
+        const data = [...userEmails];
         data.splice(index, 1);
 
         setUserEmails(data);
     };
 
+    const handleSubmit = async (e: FormEvent) => {
+        e.preventDefault();
+        const response = await api.post('api/v1/gifts', {
+            title,
+            description,
+            visibility,
+            allowedUserEmails: userEmails,
+            gifts: gifts,
+        });
+
+        console.log(response);
+    };
+
     return (
         <>
             <div className="flex items-center w-full justify-center">
-                <form className="flex-col gap-6 py-6 w-auto">
+                <form
+                    className="flex-col gap-6 py-6 w-auto"
+                    onSubmit={handleSubmit}
+                >
                     <p className="text-2xl pb-6">Создание вишлиста</p>
                     <div className="pb-8">
                         <Input
@@ -90,11 +183,7 @@ export const WishlistAddPage = () => {
                                         isRequired
                                         classNames={{
                                             base: 'flex flex-row justify-between items-between',
-                                            inputWrapper: Boolean(
-                                                userEmails.length > 1,
-                                            )
-                                                ? 'max-w-80 w-80'
-                                                : 'max-w-96 w-96',
+                                            inputWrapper: 'max-w-80 w-80',
                                         }}
                                         value={email}
                                         onChange={(e) =>
@@ -106,24 +195,119 @@ export const WishlistAddPage = () => {
                                         type="text"
                                         placeholder="Почта"
                                     />
-                                    {Boolean(userEmails.length > 1) && (
-                                        <Button
-                                            onClick={() =>
-                                                removeUserEmail(index)
-                                            }
-                                            isIconOnly
-                                            className="w-12 ml-4"
-                                            variant="bordered"
-                                        >
-                                            <TrashIcon width="25px" />
-                                        </Button>
-                                    )}
+                                    <Button
+                                        onClick={() => removeUserEmail(index)}
+                                        isIconOnly
+                                        className="w-12 ml-4"
+                                        variant="bordered"
+                                    >
+                                        <TrashIcon width="25px" />
+                                    </Button>
                                 </div>
                             ))}
                             <Button onClick={() => addUserEmail()}>
                                 Добавить
                             </Button>
                         </div>
+                    </div>
+                    <div className="flex flex-col w-full items-end pb-6">
+                        {gifts.map((gift, index) => (
+                            <Card className="py-6 mb-6 w-full" key={index}>
+                                <CardHeader>Подарок {index + 1}</CardHeader>
+                                <CardBody>
+                                    <div className="flex pl-2 justify-between pb-6">
+                                        <p className="text-small">Название</p>
+                                        <Input
+                                            isRequired
+                                            classNames={{
+                                                base: 'flex flex-row justify-end items-end',
+                                                inputWrapper: 'max-w-96 w-96',
+                                            }}
+                                            value={gift.title}
+                                            onChange={(e) =>
+                                                handleGiftsChange(
+                                                    e.target.value,
+                                                    'title',
+                                                    index,
+                                                )
+                                            }
+                                            type="text"
+                                            placeholder="Название"
+                                        />
+                                    </div>
+
+                                    <div className="flex pl-2 justify-between pb-6">
+                                        <p className="text-small">Описание</p>
+                                        <Input
+                                            isRequired
+                                            classNames={{
+                                                base: 'flex flex-row justify-end items-end',
+                                                inputWrapper: 'max-w-96 w-96',
+                                            }}
+                                            value={gift.description}
+                                            onChange={(e) =>
+                                                handleGiftsChange(
+                                                    e.target.value,
+                                                    'description',
+                                                    index,
+                                                )
+                                            }
+                                            type="text"
+                                            placeholder="Описание"
+                                        />
+                                    </div>
+
+                                    <div className="flex pl-2 justify-between pb-6">
+                                        <p className="text-small">Ссылка</p>
+                                        <Input
+                                            isRequired
+                                            classNames={{
+                                                base: 'flex flex-row justify-end items-end',
+                                                inputWrapper: 'max-w-96 w-96',
+                                            }}
+                                            value={gift.url}
+                                            onChange={(e) =>
+                                                handleGiftsChange(
+                                                    e.target.value,
+                                                    'url',
+                                                    index,
+                                                )
+                                            }
+                                            type="text"
+                                            placeholder="Ссылка"
+                                        />
+                                    </div>
+
+                                    <div className="flex pl-2 justify-between pb-6">
+                                        <p className="text-small">Цена</p>
+                                        <Input
+                                            isRequired
+                                            classNames={{
+                                                base: 'flex flex-row justify-end items-end',
+                                                inputWrapper: 'max-w-96 w-96',
+                                            }}
+                                            type="number"
+                                            value={`${gift.price}`}
+                                            onChange={(e) =>
+                                                handleGiftsChange(
+                                                    e.target.value,
+                                                    'price',
+                                                    index,
+                                                )
+                                            }
+                                            placeholder="Цена"
+                                        />
+                                    </div>
+                                    <ImageControl
+                                        onChange={handleGiftsImageChange(index)}
+                                    ></ImageControl>
+                                </CardBody>
+                            </Card>
+                        ))}
+
+                        <Button onClick={() => addGift()}>
+                            Добавить подарок
+                        </Button>
                     </div>
                     <div className="flex gap-2 justify-end">
                         <Button fullWidth color="primary" type="submit">

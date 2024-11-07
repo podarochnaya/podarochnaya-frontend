@@ -44,7 +44,7 @@ export const Header = () => {
             <NavbarContent className="gap-4" justify="center">
                 {NAVBAR_LINKS.map((link) => (
                     <NavbarItem
-                        isActive={location.pathname === link.href}
+                        isActive={location.pathname.includes(link.href)}
                         key={link.id}
                     >
                         <Link color="foreground" href={link.href}>
@@ -63,7 +63,7 @@ export const Header = () => {
                             <Button
                                 as={Link}
                                 color="primary"
-                                href="#"
+                                href="/sign-up"
                                 variant="flat"
                             >
                                 Sign Up

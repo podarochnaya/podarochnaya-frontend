@@ -2,8 +2,8 @@ export interface WishlistDashboard {
     id: number;
     title: string;
     description: string;
-    status: 'OPENED';
-    visibility: 'PUBLIC';
+    status: 'OPENED' | 'CLOSED';
+    visibility: keyof typeof WishlistVisibility;
     ownerUser: {
         id: number;
         email: string;

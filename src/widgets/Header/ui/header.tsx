@@ -1,21 +1,35 @@
 import {
+    Avatar,
+    Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
+    Image,
+    Link,
     Navbar,
     NavbarBrand,
-    Image,
-    NavbarItem,
     NavbarContent,
-    Link,
-    Button,
-    Avatar,
-    Dropdown,
-    DropdownTrigger,
-    DropdownMenu,
-    DropdownItem,
+    NavbarItem,
 } from '@nextui-org/react';
 import { useAuth } from '../../../app/providers/AuthProvider.tsx';
+import { useLocation } from 'react-router-dom';
+
+const NAVBAR_LINKS = [
+    {
+        href: '/dashboard',
+        title: 'Dashboard',
+    },
+    {
+        href: '/wishlists',
+        title: 'Wishlists',
+    },
+    { href: '/santa', title: 'Santa' },
+];
 
 export const Header = () => {
     const { token, logout } = useAuth();
+    const location = useLocation();
 
     return (
         <Navbar isBordered maxWidth="full">
@@ -26,21 +40,13 @@ export const Header = () => {
                 </p>
             </NavbarBrand>
             <NavbarContent className="gap-4" justify="center">
-                <NavbarItem>
-                    <Link color="foreground" href="/dashboard">
-                        Dashboard
-                    </Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" href="/wishlists">
-                        Wishlists
-                    </Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" href="/santa">
-                        Santa
-                    </Link>
-                </NavbarItem>
+                {NAVBAR_LINKS.map((link) => (
+                    <NavbarItem isActive={location.pathname === link.href}>
+                        <Link color="foreground" href={link.href}>
+                            {link.title}
+                        </Link>
+                    </NavbarItem>
+                ))}
             </NavbarContent>
             <NavbarContent justify="end">
                 {!token ? (
@@ -77,7 +83,11 @@ export const Header = () => {
                             aria-label="Profile Actions"
                             variant="flat"
                         >
-                            <DropdownItem key="logout" color="danger" onClick={logout}>
+                            <DropdownItem
+                                key="logout"
+                                color="danger"
+                                onClick={logout}
+                            >
                                 Log Out
                             </DropdownItem>
                         </DropdownMenu>

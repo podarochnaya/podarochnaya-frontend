@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { Key, useCallback } from 'react';
 import {
     Avatar,
     Button,
@@ -14,21 +14,25 @@ import {
 } from '@nextui-org/react';
 import { columns, giftsMock } from '../../lib/constants.ts';
 import { ColumnStaticSize } from '@react-types/table';
-import { SearchIcon } from './SearchIcon.tsx';
+import { SearchIcon } from '../../../../shared/components/icons/SearchIcon/SearchIcon.tsx';
 
 export const DashboardPage = () => {
     const gifts = giftsMock;
     const [filterValue, setFilterValue] = React.useState('');
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [page, setPage] = React.useState(1);
-    const renderCell = useCallback((gift, columnKey: string) => {
-        const cellValue = gift[columnKey];
+    const renderCell = useCallback((gift, columnKey: Key) => {
+        const cellValue = gift[columnKey.toString()];
 
         switch (columnKey) {
             case 'title':
                 return (
                     <div className="flex flex-row items-center gap-5">
-                        <Avatar src={gift.image} size="lg" />
+                        <Avatar
+                            src={gift.image}
+                            size="lg"
+                            className="min-w-14"
+                        />
                         <p className="text-medium">{cellValue}</p>
                     </div>
                 );

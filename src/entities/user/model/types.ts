@@ -5,6 +5,11 @@ export interface User {
     birthday: string;
 }
 
+export interface UserRef {
+    id: number;
+    email: string;
+}
+
 export interface LoginDTO {
     email: string;
     password: string;

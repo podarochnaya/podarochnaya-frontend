@@ -14,6 +14,7 @@ import {
 } from '@nextui-org/react';
 import { useAuth } from '../../../app/providers/AuthProvider.tsx';
 import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const NAVBAR_LINKS = [
     {
@@ -32,6 +33,7 @@ const NAVBAR_LINKS = [
 export const Header = () => {
     const { token, logout } = useAuth();
     const location = useLocation();
+    const navigate = useNavigate();
 
     return (
         <Navbar isBordered maxWidth="full">
@@ -44,7 +46,7 @@ export const Header = () => {
             <NavbarContent className="gap-4" justify="center">
                 {NAVBAR_LINKS.map((link) => (
                     <NavbarItem
-                        isActive={location.pathname === link.href}
+                        isActive={location.pathname.includes(link.href)}
                         key={link.id}
                     >
                         <Link color="foreground" href={link.href}>
@@ -63,7 +65,7 @@ export const Header = () => {
                             <Button
                                 as={Link}
                                 color="primary"
-                                href="#"
+                                href="/sign-up"
                                 variant="flat"
                             >
                                 Sign Up
@@ -95,7 +97,15 @@ export const Header = () => {
                             >
                                 Log Out
                             </DropdownItem>
+                                            <DropdownItem
+                                                key="settings"
+                                                onClick={() => navigate('/settings')}
+                                            >
+                                                Settings
+                                            </DropdownItem>
+
                         </DropdownMenu>
+
                     </Dropdown>
                 )}
             </NavbarContent>

@@ -18,3 +18,10 @@ export interface LoginDTO {
 export interface AuthToken {
     token: string;
 }
+
+export interface UserResponse {
+    id: number;
+    email: string;
+    fullName: string;
+    birthday: string;
+}

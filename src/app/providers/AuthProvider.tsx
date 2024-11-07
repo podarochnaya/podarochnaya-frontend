@@ -1,10 +1,10 @@
-import { createContext, ReactNode, useContext, useEffect } from 'react';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import { LoginDTO, User } from '../../entities/user/model/types.ts';
 import { useUser } from '../../entities/user/hooks/useUser.ts';
 import { useLocalStorage } from '../../entities/user/hooks/useLocalStorage.ts';
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from '../../entities/user/constants.ts';
 import { useNavigate } from 'react-router-dom';
-import { getUser, loginUser, registerUser } from '../../entities/user';
+import { getUser, loginUser, registerUser, updateUserBack } from '../../entities/user';
 
 interface AuthContext {
     token: string | null;
@@ -32,6 +32,9 @@ const AuthProvider = ({ children }: { children?: ReactNode }) => {
     const { user, token, setUser, removeUser, setToken, removeToken } =
         useUser();
     const { getItem } = useLocalStorage();
+    const [error, setError] = useState<string | null>(null);
+
+
 
     useEffect(() => {
         const token = getItem(AUTH_TOKEN_LOCAL_STORAGE_KEY);
@@ -46,8 +49,7 @@ const AuthProvider = ({ children }: { children?: ReactNode }) => {
 
             if (response.data) {
                 setToken(response.data.token);
-                navigate('/dashboard');
-
+                navigate("/dashboard")
                 return;
             }
             throw new Error(response.statusText);
@@ -59,6 +61,7 @@ const AuthProvider = ({ children }: { children?: ReactNode }) => {
     const logout = () => {
         removeToken();
         removeUser();
+        navigate("/login");
     };
 
     const register = async (data: User) => {
@@ -77,14 +80,26 @@ const AuthProvider = ({ children }: { children?: ReactNode }) => {
         }
     };
 
+
+const updateUser = async (userId: number, userData: User, token: string) => {
+    console.log(userData);
+        const response = await updateUserBack(userId, userData, token);  // Вызов API для обновления
+        if (response.data) {
+            setUser(response.data); // Обновляем данные пользователя
+        } else {
+            throw new Error('Failed to update user');
+}
+};
+
     const fetchUser = async () => {
         try {
-            const response = await getUser();
+            if (!token) {
+                throw new Error('No token found');
+            }
+            const response = await getUser(token);
 
             if (response.data) {
                 setUser(response.data);
-                navigate('/dashboard');
-
                 return;
             }
             throw new Error(response.statusText);
@@ -104,6 +119,7 @@ const AuthProvider = ({ children }: { children?: ReactNode }) => {
                 setToken,
                 setUser,
                 register,
+                updateUser
             }}
         >
             {children}

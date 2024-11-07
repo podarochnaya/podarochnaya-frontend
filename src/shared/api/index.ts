@@ -1,8 +1,10 @@
 import axios from "axios";
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from '../../entities/user/constants.ts';
+import { toast } from 'react-hot-toast';
 
 const api = axios.create({
-    baseURL: "http://localhost:8080", // todo
+    baseURL: "http://51.250.70.171:8080", // todo
+//     baseURL: "http://localhost:8080", // todo
 });
 
 api.interceptors.request.use(
@@ -41,5 +43,17 @@ api.interceptors.request.use(
 //         return Promise.reject(error);
 //     }
 // );
+
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        toast.error(error.response.data.title || error.response.data.error, {
+            duration: 10000,
+            position: 'top-right',
+        });
+
+        return Promise.reject(error);
+    }
+);
 
 export default api;

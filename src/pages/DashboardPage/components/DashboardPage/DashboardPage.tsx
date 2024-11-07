@@ -34,7 +34,7 @@ export const DashboardPage = () => {
             });
     }, []);
 
-    const renderCell = useCallback((gift, columnKey: Key) => {
+    const renderCell = useCallback((gift, image, columnKey: Key) => {
         const cellValue = gift[columnKey.toString()];
 
         switch (columnKey) {
@@ -42,7 +42,7 @@ export const DashboardPage = () => {
                 return (
                     <div className="flex flex-row items-center gap-5">
                         <Avatar
-                            src={`data:image/png;base64,${gift.image}`}
+                            src={`data:image/png;base64,${image}`}
                             size="lg"
                             className="min-w-14"
                         />
@@ -226,7 +226,7 @@ export const DashboardPage = () => {
                     <TableRow key={item.gift.id}>
                         {(columnKey) => (
                             <TableCell>
-                                {renderCell(item.gift, columnKey)}
+                                {renderCell(item.gift, item.image, columnKey)}
                             </TableCell>
                         )}
                     </TableRow>

@@ -5,6 +5,7 @@ import {
     CardHeader,
     Chip,
     Divider,
+    Link,
 } from '@nextui-org/react';
 import { PlusIcon } from '../../../../shared/components/icons/PlusIcon/PlusIcon.tsx';
 import { UnlockIcon } from '../../../../shared/components/icons/UnlockIcon/UnlockIcon.tsx';
@@ -46,14 +47,19 @@ export const WishlistsPage = () => {
     return (
         <>
             <div className="flex flex-row px-10 py-5 justify-end">
-                <Button isIconOnly variant="bordered">
+                <Button
+                    isIconOnly
+                    variant="bordered"
+                    as={Link}
+                    href="/wishlists/add"
+                >
                     {' '}
                     <PlusIcon width="20px" />{' '}
                 </Button>
             </div>
             <div className="grid grid-cols-2 gap-10 px-10">
                 {wishlists.map((wishlist) => (
-                    <Card className="p-3">
+                    <Card className="p-3" key={wishlist.id}>
                         <CardHeader>
                             <p className="text-2xl flex items-center w-full justify-between">
                                 {wishlist.title}
@@ -99,9 +105,11 @@ export const WishlistsPage = () => {
                             <p className="flex gap-2">
                                 Пользователи:
                                 <p className="text-medium text-neutral-500">
-                                    {wishlist.allowedUsers.map((email) => (
-                                        <p>{email}</p>
-                                    ))}
+                                    {wishlist.allowedUsers.map(
+                                        (email, index) => (
+                                            <p key={index}>{email}</p>
+                                        ),
+                                    )}
                                 </p>
                             </p>
                         </CardBody>

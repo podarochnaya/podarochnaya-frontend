@@ -18,14 +18,16 @@ import { useNavigate } from 'react-router-dom';
 
 const NAVBAR_LINKS = [
     {
+        id: 1,
         href: '/dashboard',
         title: 'Dashboard',
     },
     {
+        id: 2,
         href: '/wishlists',
         title: 'Wishlists',
     },
-    { href: '/santa', title: 'Santa' },
+    { id: 3, href: '/santa', title: 'Santa' },
 ];
 
 export const Header = () => {
@@ -43,7 +45,10 @@ export const Header = () => {
             </NavbarBrand>
             <NavbarContent className="gap-4" justify="center">
                 {NAVBAR_LINKS.map((link) => (
-                    <NavbarItem isActive={location.pathname === link.href}>
+                    <NavbarItem
+                        isActive={location.pathname.includes(link.href)}
+                        key={link.id}
+                    >
                         <Link color="foreground" href={link.href}>
                             {link.title}
                         </Link>
@@ -60,7 +65,7 @@ export const Header = () => {
                             <Button
                                 as={Link}
                                 color="primary"
-                                href="#"
+                                href="/sign-up"
                                 variant="flat"
                             >
                                 Sign Up

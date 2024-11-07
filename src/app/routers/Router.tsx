@@ -7,6 +7,7 @@ import NotFoundPage from '../../pages/NotFoundPage/components/NotFoundPage.tsx';
 import { DashboardPage } from '../../pages/DashboardPage/components/DashboardPage/DashboardPage.tsx';
 import { WishlistsPage } from '../../pages/WishlistsPage/components/WishlistsPage/WishlistsPage.tsx';
 import { UserSettingsPage } from '../../pages/UserSettingsPage/components/UserSettingsPage/UserSettingsPage.tsx';
+import { WishlistAddPage } from '../../pages/WishlistAddPage/components/WishlistAddPage/WishlistAddPage.tsx';
 
 export const Router = () => {
     const navigate = useNavigate();
@@ -18,9 +19,12 @@ export const Router = () => {
                     <Route path="login" element={<LoginPage />}></Route>
                     <Route path="sign-up" element={<RegisterPage />}></Route>
                     <Route path="dashboard" element={<DashboardPage />}></Route>
-                    <Route path="wishlists" element={<WishlistsPage />}></Route>
                     <Route path="settings" element={<UserSettingsPage />}></Route>
-                    <Route path="*" element={<NotFoundPage />} ></Route>
+                    <Route path="wishlists">
+                        <Route path="" element={<WishlistsPage />} />
+                        <Route path="add" element={<WishlistAddPage />}></Route>
+                    </Route>
+                    <Route path="*" element={<NotFoundPage />}></Route>
                     {/*<Route path="register"></Route>*/}
                 </Route>
             </Routes>

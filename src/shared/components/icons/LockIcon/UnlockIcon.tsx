@@ -1,6 +1,6 @@
 import { SVGProps } from 'react';
 
-export const LockIcon = (props: SVGProps<SVGSVGElement>) => {
+export const UnlockIcon = (props: SVGProps<SVGSVGElement>) => {
     return (
         <svg id="Layer_1" version="1.1" viewBox="0 0 64 64" {...props}>
             <g>

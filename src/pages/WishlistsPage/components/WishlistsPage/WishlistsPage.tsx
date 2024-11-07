@@ -8,41 +8,21 @@ import {
     Link,
 } from '@nextui-org/react';
 import { PlusIcon } from '../../../../shared/components/icons/PlusIcon/PlusIcon.tsx';
-import { UnlockIcon } from '../../../../shared/components/icons/UnlockIcon/UnlockIcon.tsx';
-import { LockIcon } from '../../../../shared/components/icons/LockIcon/LockIcon.tsx';
-
-const MOCK_WISHLISTS_LIST = [
-    {
-        id: 1,
-        title: 'Wishlist 1',
-        description: 'Для работы',
-        status: 'OPENED',
-        visibility: 'PUBLIC',
-        createdAt: '2007-12-03T10:15:30',
-        allowedUsers: ['test@test.ru', 'asd@test.ru', 'qwe@mail.ru'],
-    },
-    {
-        id: 2,
-        title: 'Wishlist 2',
-        description: 'Для учебы',
-        status: 'OPENED',
-        visibility: 'PRIVATE',
-        createdAt: '2007-12-03T10:15:30',
-        allowedUsers: ['test@test.ru', 'asd@test.ru', 'qwe@mail.ru'],
-    },
-    {
-        id: 3,
-        title: 'Wishlist 3',
-        description: 'Для коллег',
-        status: 'CLOSED',
-        visibility: 'PUBLIC',
-        createdAt: '2007-12-03T10:15:30',
-        allowedUsers: ['test@test.ru', 'asd@test.ru', 'qwe@mail.ru'],
-    },
-];
+import { LockIcon } from '../../../../shared/components/icons/UnlockIcon/LockIcon.tsx';
+import { UnlockIcon } from '../../../../shared/components/icons/LockIcon/UnlockIcon.tsx';
+import { useEffect, useState } from 'react';
+import api from '../../../../shared/api';
+import { WishlistDashboard } from '../../../../entities/wishlist/model/types.ts';
 
 export const WishlistsPage = () => {
-    const wishlists = MOCK_WISHLISTS_LIST;
+    const [wishlists, setWishlists] = useState<WishlistDashboard[]>([]);
+
+    useEffect(() => {
+        api.get<WishlistDashboard[]>('api/v1/wishlists').then((res) => {
+            if (res.data)
+                setWishlists(res.data);
+        });
+    }, [])
 
     return (
         <>
@@ -64,10 +44,10 @@ export const WishlistsPage = () => {
                             <p className="text-2xl flex items-center w-full justify-between">
                                 {wishlist.title}
                                 <div className="flex items-center">
-                                    {wishlist.visibility === 'PUBLIC' ? (
-                                        <UnlockIcon width="35px" />
-                                    ) : (
+                                    {wishlist.visibility !== 'PUBLIC' ? (
                                         <LockIcon width="35px" />
+                                    ) : (
+                                        <UnlockIcon width="35px" />
                                     )}
                                 </div>
                             </p>

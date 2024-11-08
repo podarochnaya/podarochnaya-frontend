@@ -10,6 +10,7 @@ import {
 import { PlusIcon } from '../../../../shared/components/icons/PlusIcon/PlusIcon.tsx';
 import { LockIcon } from '../../../../shared/components/icons/UnlockIcon/LockIcon.tsx';
 import { UnlockIcon } from '../../../../shared/components/icons/LockIcon/UnlockIcon.tsx';
+import { TrashIcon } from '../../../../shared/components/icons/TrashIcon/TrashIcon.tsx';
 import { useEffect, useState } from 'react';
 import api from '../../../../shared/api';
 import { WishlistDashboard } from '../../../../entities/wishlist/model/types.ts';
@@ -23,6 +24,15 @@ export const WishlistsPage = () => {
                 setWishlists(res.data);
         });
     }, [])
+
+    const handleDelete = async (wishlistId: number) => {
+        try {
+            await api.delete(`api/v1/wishlists/${wishlistId}`);
+            setWishlists(prevWishlists => prevWishlists.filter(w => w.id !== wishlistId));
+        } catch (error) {
+            console.error('Ошибка при удалении списка пожеланий:', error);
+        }
+    };
 
     return (
         <>
@@ -94,6 +104,16 @@ export const WishlistsPage = () => {
                                     )}
                                 </p>
                             </p>
+                            <div className="flex justify-end mt-4">
+                                                            <Button
+                                                                isIconOnly
+                                                                variant="light"
+                                                                color="error"
+                                                                onClick={() => handleDelete(wishlist.id)}
+                                                            >
+                                                                <TrashIcon width="30px" />
+                                                            </Button>
+                                                        </div>
                         </CardBody>
                     </Card>
                 ))}
